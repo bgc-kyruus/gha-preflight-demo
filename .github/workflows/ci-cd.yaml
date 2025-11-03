@@ -28,7 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Log in to Docker
+      - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -36,9 +36,10 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -f .github/Dockerfile -t myapp:${{ github.sha }} .
-          docker tag myapp:${{ github.sha }} myrepo/myapp:${{ github.sha }}
-          docker push myrepo/myapp:${{ github.sha }}
+          # Build Docker image
+          docker build -f .github/Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/demo-app:${{ github.sha }} .
+          # Push to Docker Hub
+          docker push ${{ secrets.DOCKER_USERNAME }}/demo-app:${{ github.sha }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -52,5 +53,5 @@ jobs:
 
       - name: Deploy (example)
         run: |
-          echo "Deploy completed. Image: myrepo/myapp:${{ github.sha }}"
+          echo "Deploy completed. Image: ${{ secrets.DOCKER_USERNAME }}/demo-app:${{ github.sha }}"
 

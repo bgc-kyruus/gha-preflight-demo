@@ -32,14 +32,19 @@ jobs:
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          password: ${{ secrets.DOCKER_TOKEN }}  # <-- Personal Access Token
 
       - name: Build and push Docker image
         run: |
-          # Build Docker image
-          docker build -f .github/Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/demo-app:${{ github.sha }} .
-          # Push to Docker Hub
-          docker push ${{ secrets.DOCKER_USERNAME }}/demo-app:${{ github.sha }}
+          IMAGE_SHA=${{ secrets.DOCKER_USERNAME }}/demo-app:${{ github.sha }}
+          IMAGE_LATEST=${{ secrets.DOCKER_USERNAME }}/demo-app:latest
+          
+          # Build image with commit SHA tag
+          docker build -f .github/Dockerfile -t $IMAGE_SHA -t $IMAGE_LATEST .
+          
+          # Push both tags
+          docker push $IMAGE_SHA
+          docker push $IMAGE_LATEST
 
   deploy:
     runs-on: ubuntu-latest
@@ -53,5 +58,5 @@ jobs:
 
       - name: Deploy (example)
         run: |
-          echo "Deploy completed. Image: ${{ secrets.DOCKER_USERNAME }}/demo-app:${{ github.sha }}"
+          echo "Deploy completed. Images pushed: ${{ secrets.DOCKER_USERNAME }}/demo-app:${{ github.sha }} and latest"
 

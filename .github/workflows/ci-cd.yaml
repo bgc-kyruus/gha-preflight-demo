@@ -28,6 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # ✅ Use IAM User credentials from GitHub Secrets
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -43,8 +44,10 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: gha-preflight-demo
+          IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -f .github/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker build -f .github/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
   deploy_ecs:
@@ -53,6 +56,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # ✅ Use the same AWS credentials here
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -66,7 +70,7 @@ jobs:
         with:
           task-definition: .github/ecs-task-def.json
           container-name: gha-preflight-demo
-          image: 093728559318.dkr.ecr.us-west-2.amazonaws.com/gha-preflight-demo:latest
+          image: ${{ steps.login-ecr.outputs.registry }}/gha-preflight-demo:${{ github.sha }}
 
       - name: Deploy to Amazon ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2

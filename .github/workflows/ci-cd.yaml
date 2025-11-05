@@ -31,22 +31,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # ✅ Configure AWS using OIDC role
+      # Configure AWS using OIDC
       - name: Configure AWS credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::768843312651:role/GitHubActionsECRDeployRole
           aws-region: us-west-2
 
-      # ✅ Create ECR repository if it doesn't exist
-      - name: Create ECR repository if not exists
+      # Create ECR repository if it doesn't exist
+      - name: Create ECR repository if it doesn't exist
         run: |
           aws ecr describe-repositories --repository-names gha-preflight-demo || \
           aws ecr create-repository --repository-name gha-preflight-demo
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-west-2
 
       - name: Log in to Amazon ECR
         id: login-ecr
@@ -71,7 +67,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # ✅ Configure AWS using OIDC role
+      # Configure AWS using OIDC
       - name: Configure AWS credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -87,7 +83,7 @@ jobs:
           image: ${{ steps.login-ecr.outputs.registry }}/gha-preflight-demo:${{ github.sha }}
 
       - name: Deploy to Amazon ECS
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: gha-preflight-demo-service

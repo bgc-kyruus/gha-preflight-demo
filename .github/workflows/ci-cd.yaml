@@ -43,10 +43,8 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: gha-preflight-demo
-          IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -f .github/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker build -f .github/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
   deploy_ecs:
@@ -68,7 +66,7 @@ jobs:
         with:
           task-definition: .github/ecs-task-def.json
           container-name: gha-preflight-demo
-          image: 093728559318.dkr.ecr.us-west-2.amazonaws.com/gha-preflight-demo:${{ github.sha }}
+          image: 093728559318.dkr.ecr.us-west-2.amazonaws.com/gha-preflight-demo:latest
 
       - name: Deploy to Amazon ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2

@@ -31,12 +31,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # ✅ Configure AWS using OIDC role
+      # Configure AWS using OIDC
       - name: Configure AWS credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::768843312651:role/GitHubActionsECRDeployRole
           aws-region: us-west-2
+
+      # Create ECR repository if it doesn't exist
+      - name: Create ECR repository if not exists
+        run: |
+          aws ecr describe-repositories --repository-names gha-preflight-demo || \
+          aws ecr create-repository --repository-name gha-preflight-demo
+        env:
+          AWS_REGION: us-west-2
 
       - name: Log in to Amazon ECR
         id: login-ecr
@@ -61,7 +69,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # ✅ Configure AWS using OIDC role
+      # Configure AWS using OIDC
       - name: Configure AWS credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:

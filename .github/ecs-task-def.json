@@ -1,11 +1,12 @@
 {
   "family": "gha-preflight-demo-task",
   "networkMode": "awsvpc",
-  "executionRoleArn": "arn:aws:iam::093728559318:role/GHAECSExecutionRole",
+  "executionRoleArn": "arn:aws:iam::093728559318:role/GHAECSExecutionRole", 
+  "taskRoleArn": "arn:aws:iam::093728559318:role/GHAECSExecutionRole",
   "containerDefinitions": [
     {
       "name": "gha-preflight-demo",
-      "image": "093728559318.dkr.ecr.us-west-2.amazonaws.com/gha-preflight-demo:latest",
+      "image": "${IMAGE_URI}", 
       "essential": true,
       "portMappings": [
         {

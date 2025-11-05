@@ -1,0 +1,22 @@
+{
+  "family": "gha-preflight-demo-task",
+  "networkMode": "awsvpc",
+  "executionRoleArn": "arn:aws:iam::093728559318:role/GHAECSExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "gha-preflight-demo",
+      "image": "093728559318.dkr.ecr.us-west-2.amazonaws.com/gha-preflight-demo:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "protocol": "tcp"
+        }
+      ]
+    }
+  ],
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512"
+}
+

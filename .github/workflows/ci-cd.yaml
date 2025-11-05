@@ -38,7 +38,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::768843312651:role/GitHubActionsECRDeployRole
-          aws-region: us-west-2
+          aws-region: ap-southeast-2
 
       # Create ECR repository if it doesn't exist
       - name: Create ECR repository if it doesn't exist
@@ -74,7 +74,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::768843312651:role/GitHubActionsECRDeployRole
-          aws-region: us-west-2
+          aws-region: ap-southeast-2
 
       - name: Render new ECS task definition
         id: task-def
@@ -88,7 +88,7 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: gha-preflight-demo-service
+          service: gha-preflight-demo-task-service-cyf6mk9f   # <- Correct ECS service name
           cluster: gha-preflight-demo-cluster
           wait-for-service-stability: true
 

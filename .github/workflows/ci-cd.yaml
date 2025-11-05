@@ -28,6 +28,8 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    outputs:
+      ecr-registry: ${{ steps.login-ecr.outputs.registry }}
     steps:
       - uses: actions/checkout@v4
 
@@ -80,7 +82,7 @@ jobs:
         with:
           task-definition: .github/ecs-task-def.json
           container-name: gha-preflight-demo
-          image: ${{ steps.login-ecr.outputs.registry }}/gha-preflight-demo:${{ github.sha }}
+          image: ${{ needs.docker_build_ecr.outputs.ecr-registry }}/gha-preflight-demo:${{ github.sha }}
 
       - name: Deploy to Amazon ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
